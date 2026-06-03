@@ -16,6 +16,7 @@ import {
   DEFAULT_TEMPERATURE,
   DEFAULT_TOOLS_JSON,
   DEFAULT_USER_MESSAGE,
+  SAMPLE_CONVERSATION,
   SUGGESTED_RESULTS,
 } from "@/lib/sample";
 import type {
@@ -74,6 +75,7 @@ export default function Home() {
   const [pendingToolUses, setPendingToolUses] = useState<PendingToolUse[]>([]);
   const [, setTotalUsage] = useState<UsageStats>({ ...EMPTY_USAGE });
   const [error, setError] = useState<string | null>(null);
+  const [sample, setSample] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
 
@@ -93,6 +95,7 @@ export default function Home() {
         return;
       }
       setError(null);
+      setSample(false);
       setStreamingBlocks([]);
       const ac = new AbortController();
       abortRef.current = ac;
@@ -183,7 +186,32 @@ export default function Home() {
     setError(null);
     setTotalUsage({ ...EMPTY_USAGE });
     setComposer(DEFAULT_USER_MESSAGE);
+    setSample(false);
   }, []);
+
+  /** Load a fully-played-out demo conversation so a no-key visitor sees the loop alive. */
+  const onLoadDemo = useCallback(() => {
+    abortRef.current?.abort();
+    setModel(DEFAULT_MODEL);
+    setSystem(DEFAULT_SYSTEM);
+    setToolsJson(DEFAULT_TOOLS_JSON);
+    setComposer("");
+    setMessages(SAMPLE_CONVERSATION);
+    setStreamingBlocks(null);
+    setPendingToolUses([]);
+    setError(null);
+    setTotalUsage({ ...EMPTY_USAGE });
+    setSample(true);
+  }, []);
+
+  // ?demo=1 opens straight on the sample conversation.
+  const booted = useRef(false);
+  useEffect(() => {
+    if (booted.current) return;
+    booted.current = true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("demo") || window.location.hash === "#demo") onLoadDemo();
+  }, [onLoadDemo]);
 
   const onLoadSample = useCallback(() => {
     abortRef.current?.abort();
@@ -196,6 +224,7 @@ export default function Home() {
     setPendingToolUses([]);
     setError(null);
     setTotalUsage({ ...EMPTY_USAGE });
+    setSample(false);
   }, []);
 
   const onUpdateDraft = useCallback((id: string, draft: string) => {
@@ -233,6 +262,11 @@ export default function Home() {
           </div>
         </div>
         <div className="flex items-center gap-1.5">
+          {sample && (
+            <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 font-mono text-[10px] font-medium text-accent">
+              sample
+            </span>
+          )}
           <span className="hidden font-mono text-[11px] text-fg-faint sm:inline">
             {messages.length} turn{messages.length === 1 ? "" : "s"}
           </span>
@@ -294,6 +328,7 @@ export default function Home() {
             messages={messages}
             streamingBlocks={streamingBlocks}
             streamingActive={running}
+            onLoadDemo={onLoadDemo}
           />
           <InputArea
             running={running}

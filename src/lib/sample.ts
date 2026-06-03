@@ -1,4 +1,4 @@
-import type { Tool } from "./types";
+import type { Message, Tool } from "./types";
 
 export const DEFAULT_MODEL = "claude-sonnet-4-5-20250929";
 export const DEFAULT_MAX_TOKENS = 1024;
@@ -43,3 +43,65 @@ export const SUGGESTED_RESULTS: Record<string, string> = {
   get_weather: "22°C, clear skies, light wind 12 km/h, sunset 19:48.",
   get_traffic: "Heavy traffic — driving takes ~35 min, biking ~22 min on the dedicated bike lane.",
 };
+
+/**
+ * A fully-played-out demo conversation — the agent loop end to end, no key
+ * needed. Loaded by the "Preview sample" button and by `?demo=1`.
+ */
+export const SAMPLE_CONVERSATION: Message[] = [
+  { role: "user", content: DEFAULT_USER_MESSAGE },
+  {
+    role: "assistant",
+    content: [
+      { type: "text", text: "Let me check a couple of things." },
+      {
+        type: "tool_use",
+        id: "toolu_demo_01",
+        name: "get_weather",
+        input: { city: "Istanbul" },
+      },
+    ],
+  },
+  {
+    role: "user",
+    content: [
+      {
+        type: "tool_result",
+        tool_use_id: "toolu_demo_01",
+        content: SUGGESTED_RESULTS.get_weather,
+      },
+    ],
+  },
+  {
+    role: "assistant",
+    content: [
+      { type: "text", text: "Weather's great. Now checking traffic." },
+      {
+        type: "tool_use",
+        id: "toolu_demo_02",
+        name: "get_traffic",
+        input: { origin: "Beşiktaş", destination: "Levent" },
+      },
+    ],
+  },
+  {
+    role: "user",
+    content: [
+      {
+        type: "tool_result",
+        tool_use_id: "toolu_demo_02",
+        content: SUGGESTED_RESULTS.get_traffic,
+      },
+    ],
+  },
+  {
+    role: "assistant",
+    content: [
+      {
+        type: "text",
+        text:
+          "Yes — bike. It's clear and 22°C, and the bike lane saves about 13 minutes over driving in this traffic. Perfect conditions for the ride.",
+      },
+    ],
+  },
+];

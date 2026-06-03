@@ -9,9 +9,15 @@ interface Props {
   /** in-progress assistant blocks while streaming */
   streamingBlocks: Block[] | null;
   streamingActive: boolean;
+  onLoadDemo?: () => void;
 }
 
-export function ConversationView({ messages, streamingBlocks, streamingActive }: Props) {
+export function ConversationView({
+  messages,
+  streamingBlocks,
+  streamingActive,
+  onLoadDemo,
+}: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom as the conversation grows or streams.
@@ -55,7 +61,7 @@ export function ConversationView({ messages, streamingBlocks, streamingActive }:
   return (
     <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
       {empty ? (
-        <EmptyState />
+        <EmptyState onLoadDemo={onLoadDemo} />
       ) : (
         <div className="mx-auto max-w-3xl space-y-2.5">
           {rows.map((r, i) => (
@@ -74,13 +80,21 @@ export function ConversationView({ messages, streamingBlocks, streamingActive }:
   );
 }
 
-function EmptyState() {
+function EmptyState({ onLoadDemo }: { onLoadDemo?: () => void }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center text-center">
-      <Wrench size={26} className="mb-3 text-fg-faint" />
+    <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+      <Wrench size={26} className="text-fg-faint" />
       <p className="max-w-[20rem] text-sm text-fg-faint">
         Define tools on the left and send a user message — the agent loop plays out here.
       </p>
+      {onLoadDemo && (
+        <button
+          onClick={onLoadDemo}
+          className="rounded-lg border border-border-strong px-3 py-1.5 text-xs text-fg-muted transition-colors hover:border-accent hover:text-fg"
+        >
+          Preview a sample run
+        </button>
+      )}
     </div>
   );
 }
