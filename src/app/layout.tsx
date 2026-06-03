@@ -5,7 +5,7 @@ import "./globals.css";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
-const SITE = "https://claude-tool-lab.vercel.app";
+const SITE = "https://tool-lab-bice.vercel.app";
 const DESCRIPTION =
   "An interactive Claude tool-use sandbox: define tools, send a user message, mock the tool responses, and watch the agent loop play out live. Bring your own key, no backend.";
 

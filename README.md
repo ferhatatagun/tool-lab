@@ -8,7 +8,7 @@ agent and don't want to stand up real tool implementations yet.
 
 Bring your own key. No backend. Nothing leaves your browser.
 
-**[Live → claude-tool-lab.vercel.app](https://claude-tool-lab.vercel.app)**
+**[Live → tool-lab-bice.vercel.app](https://tool-lab-bice.vercel.app)**
 
 ![tool-lab](docs/preview.png)
 
