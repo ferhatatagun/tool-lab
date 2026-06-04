@@ -91,6 +91,17 @@ Static-friendly, no environment variables. One-click on Vercel:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/ferhatatagun/tool-lab)
 
+## Read the story
+
+The case for prototyping agents by hand-mocking tool responses before
+writing the real implementations:
+
+- [**Build the sandbox before you write a single tool**](https://ferhatatagun.com/blog/build-the-sandbox-first)
+  — why "tool implementations are not the hard part of agent
+  development; tool design is," with a worked example where 3 of 4
+  initial tools didn't survive the first sandbox session — and the
+  fifteen-minute exercise that saves a day of rework.
+
 ## A small suite
 
 Four tools for seeing what Claude is doing, built together with a shared design language:
