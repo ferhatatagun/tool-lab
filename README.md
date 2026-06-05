@@ -110,12 +110,13 @@ writing the real implementations:
 
 ## A small suite
 
-Four tools for seeing what Claude is doing, built together with a shared design language:
+Five tools for seeing what Claude is doing, built together with a shared design language:
 
 - [claudoscope](https://github.com/ferhatatagun/claudoscope) — x-ray your Claude API calls
 - [agent-replay](https://github.com/ferhatatagun/agent-replay) — replay a static agent trace
 - [prompt-lab](https://github.com/ferhatatagun/prompt-lab) — A/B test prompts side by side
 - **tool-lab** — interactive tool-use sandbox *(this one)*
+- [context-lens](https://github.com/ferhatatagun/context-lens) — see a Claude prompt before you ship it
 
 ## Tech
 
