@@ -1,5 +1,11 @@
 # tool-lab
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-8b5cf6?style=flat-square)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/ferhatatagun/tool-lab?style=flat-square&color=8b5cf6&logo=github)](https://github.com/ferhatatagun/tool-lab/stargazers)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white)](#)
+[![BYOK · No backend](https://img.shields.io/badge/BYOK-no_backend-f472b6?style=flat-square)](#)
+[![Live demo](https://img.shields.io/badge/live-tool--lab--bice.vercel.app-8b5cf6?style=flat-square)](https://tool-lab-bice.vercel.app)
+
 **An interactive Claude tool-use sandbox.**
 
 Define tools, send a user message, mock the tool responses — and watch the
