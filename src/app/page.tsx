@@ -7,7 +7,7 @@ import { KeyDialog } from "@/components/KeyDialog";
 import { ConfigPane } from "@/components/ConfigPane";
 import { ConversationView } from "@/components/ConversationView";
 import { InputArea } from "@/components/InputArea";
-import { runStream } from "@/lib/anthropic";
+import { contextKey, runStream } from "@/lib/anthropic";
 import { loadApiKey, saveApiKey } from "@/lib/storage";
 import {
   DEFAULT_MAX_TOKENS,
@@ -97,6 +97,7 @@ export default function Home() {
       setError(null);
       setSample(false);
       setStreamingBlocks([]);
+      const ctx = contextKey(system, tools);
       const ac = new AbortController();
       abortRef.current = ac;
 
@@ -109,6 +110,7 @@ export default function Home() {
           tools,
           maxTokens: DEFAULT_MAX_TOKENS,
           temperature: DEFAULT_TEMPERATURE,
+          ctx,
         },
         {
           onUpdate: (blocks) => setStreamingBlocks(blocks),
@@ -121,7 +123,7 @@ export default function Home() {
                 prev.cache_creation_input_tokens + u.cache_creation_input_tokens,
             })),
           onDone: ({ blocks }) => {
-            setMessages((prev) => [...prev, { role: "assistant", content: blocks }]);
+            setMessages((prev) => [...prev, { role: "assistant", content: blocks, ctx }]);
             setStreamingBlocks(null);
             const pendings: PendingToolUse[] = blocks
               .filter((b): b is Extract<Block, { type: "tool_use" }> => b.type === "tool_use")

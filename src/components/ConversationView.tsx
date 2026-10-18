@@ -42,18 +42,20 @@ export function ConversationView({
   }
 
   // Flatten into rendered rows with role context.
-  const rows: { role: "user" | "assistant"; block: Block; key: string }[] = [];
+  const rows: { role: "user" | "assistant"; block: VisibleBlock; key: string }[] = [];
   messages.forEach((m, mi) => {
     if (typeof m.content === "string") {
       rows.push({ role: m.role, block: { type: "text", text: m.content }, key: `${mi}-s` });
     } else {
-      m.content.forEach((b, bi) => rows.push({ role: m.role, block: b, key: `${mi}-${bi}` }));
+      m.content.forEach((b, bi) => {
+        if (isVisible(b)) rows.push({ role: m.role, block: b, key: `${mi}-${bi}` });
+      });
     }
   });
   if (streamingBlocks) {
-    streamingBlocks.forEach((b, bi) =>
-      rows.push({ role: "assistant", block: b, key: `stream-${bi}` }),
-    );
+    streamingBlocks.forEach((b, bi) => {
+      if (isVisible(b)) rows.push({ role: "assistant", block: b, key: `stream-${bi}` });
+    });
   }
   const lastIdx = rows.length - 1;
   const empty = rows.length === 0;
@@ -80,6 +82,13 @@ export function ConversationView({
   );
 }
 
+/** Thinking blocks travel with the conversation but aren't part of what the lab shows. */
+type VisibleBlock = Exclude<Block, { type: "thinking" | "redacted_thinking" }>;
+
+function isVisible(b: Block): b is VisibleBlock {
+  return b.type !== "thinking" && b.type !== "redacted_thinking";
+}
+
 function EmptyState({ onLoadDemo }: { onLoadDemo?: () => void }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
@@ -101,7 +110,7 @@ function EmptyState({ onLoadDemo }: { onLoadDemo?: () => void }) {
 
 interface RowProps {
   role: "user" | "assistant";
-  block: Block;
+  block: VisibleBlock;
   toolNames: Map<string, string>;
   isLast: boolean;
   streamingActive: boolean;
@@ -158,7 +167,7 @@ function BlockBody({
   streamingActive,
   role,
 }: {
-  block: Block;
+  block: VisibleBlock;
   streamingActive: boolean;
   role: "user" | "assistant";
 }) {
@@ -198,7 +207,7 @@ function BlockBody({
   );
 }
 
-function metaFor(role: "user" | "assistant", block: Block) {
+function metaFor(role: "user" | "assistant", block: VisibleBlock) {
   if (block.type === "tool_use") {
     return { label: "Tool call", color: "var(--tool)", icon: <Wrench size={12} /> };
   }

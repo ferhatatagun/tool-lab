@@ -64,7 +64,7 @@ export function ConfigPane({
             disabled={running}
             spellCheck={false}
             autoComplete="off"
-            placeholder="claude-sonnet-4-5-20250929"
+            placeholder="claude-sonnet-5-5"
             className="w-full rounded-lg border border-border-strong bg-bg px-2.5 py-1.5 font-mono text-xs text-fg outline-none transition-colors placeholder:text-fg-faint focus:border-accent disabled:opacity-60"
           />
           <datalist id="tl-models">

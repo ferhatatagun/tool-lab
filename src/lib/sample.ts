@@ -1,7 +1,8 @@
 import type { Message, Tool } from "./types";
 
-export const DEFAULT_MODEL = "claude-sonnet-4-5-20250929";
-export const DEFAULT_MAX_TOKENS = 1024;
+export const DEFAULT_MODEL = "claude-sonnet-5-5";
+// Headroom for models that think by default — thinking tokens count against max_tokens.
+export const DEFAULT_MAX_TOKENS = 4096;
 export const DEFAULT_TEMPERATURE = 1;
 
 export const DEFAULT_SYSTEM =
