@@ -1,4 +1,13 @@
-import type { Block, Message, TextBlock, Tool, ToolUseBlock, UsageStats } from "./types";
+import type {
+  Block,
+  Message,
+  TextBlock,
+  ThinkingBlock,
+  Tool,
+  ToolUseBlock,
+  UsageStats,
+} from "./types";
+import { supportsSampling } from "./models";
 
 /**
  * Direct browser → Anthropic streaming, with tool-use support. Tracks per-block
@@ -16,6 +25,33 @@ export interface RunRequest {
   tools: Tool[];
   maxTokens: number;
   temperature: number;
+  /** `contextKey(system, tools)` for this request; decides which thinking blocks may be replayed. */
+  ctx: string;
+}
+
+/** Identifies the system prompt + tool definitions a reply was generated under. */
+export function contextKey(system: string, tools: Tool[]): string {
+  return JSON.stringify([system.trim(), tools]);
+}
+
+/**
+ * Messages as the API expects them. A thinking block stays valid only while the
+ * system prompt, tools and earlier messages are unchanged since it was produced;
+ * tool-lab lets you edit tools mid-conversation, so replies generated under a
+ * different context are sent without their thinking blocks (the documented
+ * fallback — the model just answers without that reasoning).
+ */
+export function toWireMessages(messages: Message[], ctx: string): Array<Pick<Message, "role" | "content">> {
+  const wire: Array<Pick<Message, "role" | "content">> = [];
+  for (const { role, content, ctx: producedUnder } of messages) {
+    if (role !== "assistant" || typeof content === "string" || producedUnder === ctx) {
+      wire.push({ role, content });
+      continue;
+    }
+    const kept = content.filter((b) => b.type !== "thinking" && b.type !== "redacted_thinking");
+    if (kept.length > 0) wire.push({ role, content: kept });
+  }
+  return wire;
 }
 
 export interface StreamCallbacks {
@@ -69,9 +105,10 @@ export async function runStream(
       body: JSON.stringify({
         model: req.model,
         max_tokens: req.maxTokens,
-        temperature: req.temperature,
+        // Newer models reject sampling parameters outright; omit rather than 400.
+        temperature: supportsSampling(req.model) ? req.temperature : undefined,
         system: req.system.trim() || undefined,
-        messages: req.messages,
+        messages: toWireMessages(req.messages, req.ctx),
         tools: req.tools.length > 0 ? req.tools : undefined,
         stream: true,
       }),
@@ -126,6 +163,10 @@ export async function runStream(
                 input: {},
               };
               toolUseJson[idx] = "";
+            } else if (block.type === "thinking") {
+              blocks[idx] = { type: "thinking", thinking: "", signature: "" };
+            } else if (block.type === "redacted_thinking") {
+              blocks[idx] = { type: "redacted_thinking", data: String(block.data ?? "") };
             }
             cb.onUpdate(blocks.filter(Boolean));
             break;
@@ -141,6 +182,12 @@ export async function runStream(
               }
             } else if (delta.type === "input_json_delta" && typeof delta.partial_json === "string") {
               toolUseJson[idx] = (toolUseJson[idx] ?? "") + delta.partial_json;
+            } else if (delta.type === "thinking_delta" && typeof delta.thinking === "string") {
+              const b = blocks[idx];
+              if (b && b.type === "thinking") (b as ThinkingBlock).thinking += delta.thinking;
+            } else if (delta.type === "signature_delta" && typeof delta.signature === "string") {
+              const b = blocks[idx];
+              if (b && b.type === "thinking") (b as ThinkingBlock).signature += delta.signature;
             }
             break;
           }

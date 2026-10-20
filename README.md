@@ -70,7 +70,8 @@ src/
     KeyDialog.tsx     BYOK key entry
   lib/
     anthropic.ts      fetch-based streaming + SSE parser with tool_use support
-    pricing.ts        tier-aware cost model
+    models.ts         model catalog: ids, per-model pricing, capabilities
+    pricing.ts        cost model built on the catalog
     sample.ts         the built-in sample (system, tools, user message)
     storage.ts        localStorage helpers
     types.ts          Message, Block, Tool, PendingToolUse
