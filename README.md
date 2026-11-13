@@ -81,6 +81,10 @@ The SSE parser handles `tool_use` blocks specifically — it accumulates the
 `input_json_delta` events per block and parses the full JSON at
 `content_block_stop`. Text streams live, tool_use cards appear when complete.
 
+## Use it as a skill
+
+The same idea ships as an agent skill, `skills/tool-design-sandbox/`. Give the agent your tool schemas and it reviews them, then simulates the agent loop with mocked tool results (including errors and bad payloads) and reports which tools to keep, rename, reword, split or drop. Copy that folder to `~/.claude/skills/` (Claude Code) or find it on [Agensi](https://www.agensi.io).
+
 ## Run locally
 
 ```bash
