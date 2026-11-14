@@ -83,7 +83,7 @@ The SSE parser handles `tool_use` blocks specifically — it accumulates the
 
 ## Use it as a skill
 
-The same idea ships as an agent skill, `skills/tool-design-sandbox/`. Give the agent your tool schemas and it reviews them, then simulates the agent loop with mocked tool results (including errors and bad payloads) and reports which tools to keep, rename, reword, split or drop. Copy that folder to `~/.claude/skills/` (Claude Code) or find it on [Agensi](https://www.agensi.io).
+The same idea ships as an agent skill, `skills/tool-design-sandbox/`. Give the agent your tool schemas and it reviews them, then simulates the agent loop with mocked tool results (including errors and bad payloads) and reports which tools to keep, rename, reword, split or drop. Copy that folder to `~/.claude/skills/` (Claude Code) or get it on [Agensi](https://agensi.io/skills/tool-design-sandbox-design-claude-tools-before-building-them).
 
 ## Run locally
 
